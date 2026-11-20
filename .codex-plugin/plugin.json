@@ -1,0 +1,32 @@
+{
+  "name": "archivum",
+  "version": "0.2.14",
+  "description": "Local-first long-term memory for AI agents: notes, transcripts, a review-first dream pass and a markdown wiki.",
+  "license": "MIT",
+  "keywords": [
+    "memory",
+    "agent-memory",
+    "mcp-server",
+    "wiki",
+    "codex"
+  ],
+  "skills": "./skills",
+  "mcpServers": "./.codex-plugin/mcp.json",
+  "interface": {
+    "displayName": "Archivum",
+    "shortDescription": "Long-term memory for your agent",
+    "longDescription": "Local-first long-term memory for AI agents. Notes, transcripts and a markdown wiki stay on your machine; a review-first dream pass runs on your own LLM key.",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Use Archivum to recall what we decided about this project earlier.",
+      "Use Archivum to remember how to run the tests for this repo.",
+      "Use Archivum to show what is pending to dream about."
+    ]
+  },
+  "homepage": "https://tryarchivum.com"
+}

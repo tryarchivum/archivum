@@ -1,0 +1,14 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "archivum",
+  "description": "Local-first long-term memory for AI agents.",
+  "owner": { "name": "Archivum authors" },
+  "plugins": [
+    {
+      "name": "archivum",
+      "description": "Local-first long-term memory for AI agents: notes, transcripts, a review-first dream pass and a markdown wiki.",
+      "source": "./",
+      "category": "development"
+    }
+  ]
+}

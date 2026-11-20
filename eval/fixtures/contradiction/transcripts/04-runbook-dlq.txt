@@ -1,0 +1,21 @@
+TRANSCRIPT trn_evalcontra000000000004 source=claude-code events=5
+
+SYSTEM:
+Session date: 2026-03-09. Project: fennelq, release 0.9.0 day.
+
+USER:
+Before the 0.9.0 rollout, how long do dead-lettered jobs stay around, and how do I look at them?
+
+ASSISTANT:
+The ops runbook should say. Reading it.
+
+TOOL bash:
+$ sed -n 20,28p docs/runbook.md
+## Dead-letter queue
+Dead-letter entries are kept for 14 days and then purged.
+List them with `fennelq dlq list --limit 50`; requeue one with `fennelq dlq retry <id>`.
+$ fennelq dlq list --limit 50
+3 entries
+
+ASSISTANT:
+Per the runbook (docs/runbook.md) dead-letter entries are kept for 14 days. Use `fennelq dlq list --limit 50` to see them and `fennelq dlq retry <id>` to requeue one.

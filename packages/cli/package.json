@@ -1,0 +1,59 @@
+{
+  "name": "archivums",
+  "version": "0.2.14",
+  "description": "Long-term memory for AI agents: notes, transcripts and a markdown wiki as plain files on your machine, plus a dream pass you review before anything changes. CLI, MCP server and Claude Code hooks.",
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "ai-agents",
+    "agent-memory",
+    "long-term-memory",
+    "memory",
+    "claude-code",
+    "codex",
+    "cursor",
+    "llm",
+    "local-first",
+    "markdown",
+    "wiki",
+    "cli"
+  ],
+  "homepage": "https://tryarchivum.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tryarchivum/archivum.git",
+    "directory": "packages/cli"
+  },
+  "bugs": {
+    "url": "https://github.com/tryarchivum/archivum/issues"
+  },
+  "author": {
+    "name": "Archivum",
+    "email": "memoryarchivum@gmail.com",
+    "url": "https://tryarchivum.com"
+  },
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "archivum": "./bin/archivum.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "vendor",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test \"test/*.test.js\"",
+    "prepack": "node scripts/vendor-core.mjs",
+    "postpack": "node scripts/vendor-core.mjs --clean"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

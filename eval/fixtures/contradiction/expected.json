@@ -1,0 +1,175 @@
+{
+  "version": 1,
+  "instructions": "This memory is for working on fennelq, a small job queue with workers. Future sessions need exact commands, flags and settings, must not rely on notes that a later session corrected, and must be told when two sources disagree and nobody has said which is right.",
+  "description": "Contradiction scenario: two notes are explicitly corrected by later transcripts (retry backoff 2 s -> 500 ms, Redis -> Postgres) and one pair is genuinely ambiguous (dead-letter retention 14 d in the runbook vs 30d in the prod config, the user declines to choose). Patterns are JavaScript regexes tested per document; case-insensitive unless a check sets flags.",
+  "checks": [
+    {
+      "id": "backoff-corrected",
+      "group": "explicit-correction",
+      "description": "The corrected retry backoff (500 ms) is documented",
+      "type": "present",
+      "pattern": "500\\s?ms|0\\.5\\s?s(ec)?\\b"
+    },
+    {
+      "id": "backoff-old-marked",
+      "group": "explicit-correction",
+      "description": "The old '2 seconds' backoff is gone or explicitly marked wrong/corrected",
+      "type": "absent_unless_marked",
+      "pattern": "\\b2\\s?(seconds?|secs?|s)\\b",
+      "marker": "wrong|incorrect|corrected|correction|outdated|out of date|stale|supersed|no longer|not 2|instead of|formerly|previously|used to|CONFLICT|erroneous|mistak"
+    },
+    {
+      "id": "storage-postgres",
+      "group": "explicit-correction",
+      "description": "Postgres is documented as the job store",
+      "type": "present",
+      "pattern": "postgres"
+    },
+    {
+      "id": "env-database-url",
+      "group": "explicit-correction",
+      "description": "The connection variable FENNELQ_DATABASE_URL is recorded",
+      "type": "present",
+      "pattern": "FENNELQ_DATABASE_URL"
+    },
+    {
+      "id": "redis-marked",
+      "group": "explicit-correction",
+      "description": "Redis as the store is gone or explicitly marked removed/wrong",
+      "type": "absent_unless_marked",
+      "pattern": "redis",
+      "marker": "removed|no longer|wrong|incorrect|corrected|supersed|dropped|obsolete|stale|out of date|formerly|previously|used to|0\\.9|CONFLICT|2026-03-09"
+    },
+    {
+      "id": "redis-url-marked",
+      "group": "explicit-correction",
+      "description": "FENNELQ_REDIS_URL is gone or explicitly marked removed/wrong",
+      "type": "absent_unless_marked",
+      "pattern": "FENNELQ_REDIS_URL",
+      "marker": "removed|no longer|wrong|incorrect|corrected|supersed|dropped|obsolete|stale|out of date|formerly|previously|used to|0\\.9|CONFLICT|2026-03-09"
+    },
+    {
+      "id": "removal-version",
+      "group": "explicit-correction",
+      "description": "The release that removed Redis (0.9.0) is recorded",
+      "type": "present",
+      "pattern": "0\\.9\\.0"
+    },
+    {
+      "id": "dlq-conflict-marked",
+      "group": "genuine-conflict",
+      "description": "The dead-letter retention disagreement (14 days vs 30d) is recorded under a `CONFLICT:` marker naming both values",
+      "type": "present",
+      "flags": "",
+      "pattern": "CONFLICT:[\\s\\S]{0,400}(?<![\\d-])14(?![\\d-])[\\s\\S]{0,400}(?<![\\d-])30(?![\\d-])|CONFLICT:[\\s\\S]{0,400}(?<![\\d-])30(?![\\d-])[\\s\\S]{0,400}(?<![\\d-])14(?![\\d-])"
+    },
+    {
+      "id": "dlq-values-hedged",
+      "group": "genuine-conflict",
+      "description": "Every mention of 14 days / 30d sits next to a conflict/unverified marker (neither is presented as the single truth)",
+      "type": "absent_unless_marked",
+      "pattern": "\\b(14|30)\\s?(d\\b|days)",
+      "marker": "CONFLICT|conflict|disagree|unverified|unconfirmed|uncertain|unclear|not sure|unknown which|contradict|unresolved|ambiguous"
+    },
+    {
+      "id": "resolved-not-conflict",
+      "group": "genuine-conflict",
+      "description": "Explicitly corrected facts (backoff, store) are NOT marked CONFLICT",
+      "type": "absent",
+      "flags": "",
+      "pattern": "CONFLICT:[^\\n]{0,200}(backoff|redis|postgres|500\\s?ms)"
+    },
+    {
+      "id": "flag-concurrency",
+      "group": "buried-detail",
+      "description": "Exact flag `--concurrency 8` is recorded",
+      "type": "present",
+      "pattern": "--concurrency[ =]8"
+    },
+    {
+      "id": "flag-max-attempts",
+      "group": "buried-detail",
+      "description": "Exact flag `--max-attempts 5` is recorded",
+      "type": "present",
+      "pattern": "--max-attempts[ =]5"
+    },
+    {
+      "id": "cmd-migrate",
+      "group": "buried-detail",
+      "description": "The migration command `fennelq migrate up` is recorded",
+      "type": "present",
+      "pattern": "fennelq migrate up"
+    },
+    {
+      "id": "cmd-dlq-list",
+      "group": "buried-detail",
+      "description": "The command `fennelq dlq list --limit 50` is recorded",
+      "type": "present",
+      "pattern": "fennelq dlq list --limit 50"
+    },
+    {
+      "id": "index-complete",
+      "group": "structure",
+      "description": "/_index.md exists and links every non-stub document",
+      "type": "index_complete",
+      "index": "/_index.md",
+      "minBodyChars": 40
+    },
+    {
+      "id": "no-dangling-links",
+      "group": "structure",
+      "description": "Every [[link]] resolves to an existing document",
+      "type": "no_dangling_links"
+    },
+    {
+      "id": "doc-size-limit",
+      "group": "structure",
+      "description": "No document is over 100,000 bytes",
+      "type": "max_doc_bytes",
+      "max": 100000
+    },
+    {
+      "id": "doc-count-sane",
+      "group": "structure",
+      "description": "Between 2 and 20 documents in total",
+      "type": "doc_count",
+      "min": 2,
+      "max": 20
+    }
+  ],
+  "questions": [
+    {
+      "id": "q-backoff",
+      "question": "What is the initial retry backoff delay in fennelq? Reply with only the value.",
+      "answer": "500\\s?ms|0\\.5\\s?s",
+      "reject": "\\b2\\s?(seconds?|secs?|s)\\b"
+    },
+    {
+      "id": "q-storage",
+      "question": "Which database stores fennelq jobs in the latest release? Reply with only its name.",
+      "answer": "postgres",
+      "reject": "redis"
+    },
+    {
+      "id": "q-env",
+      "question": "Which environment variable holds the backend connection URL? Reply with only the variable name.",
+      "answer": "FENNELQ_DATABASE_URL",
+      "reject": "FENNELQ_REDIS_URL"
+    },
+    {
+      "id": "q-redis-removed",
+      "question": "In which fennelq release was the Redis backend removed?",
+      "answer": "0\\.9\\.0"
+    },
+    {
+      "id": "q-dlq-retention",
+      "question": "How long are dead-letter entries kept? If the notes disagree, give every value they mention.",
+      "answer": "14[\\s\\S]*30|30[\\s\\S]*14"
+    },
+    {
+      "id": "q-concurrency",
+      "question": "Which worker flag sets the number of parallel jobs, and which value was recommended for more throughput?",
+      "answer": "--concurrency[\\s\\S]*\\b8\\b|\\b8\\b[\\s\\S]*--concurrency"
+    }
+  ]
+}

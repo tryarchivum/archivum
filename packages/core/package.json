@@ -1,0 +1,46 @@
+{
+  "name": "archivum-core",
+  "version": "0.2.1",
+  "description": "Archivum core: local-first agent memory (wiki, notes, BM25 search, dream engine). Isomorphic, zero dependencies.",
+  "homepage": "https://github.com/tryarchivum/archivum#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tryarchivum/archivum.git",
+    "directory": "packages/core"
+  },
+  "bugs": {
+    "url": "https://github.com/tryarchivum/archivum/issues"
+  },
+  "author": "Archivum authors",
+  "type": "module",
+  "license": "MIT",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test \"test/*.test.js\""
+  },
+  "sideEffects": false,
+  "keywords": [
+    "ai",
+    "agents",
+    "memory",
+    "llm",
+    "mcp",
+    "wiki",
+    "bm25"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "private": true
+}

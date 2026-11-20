@@ -1,0 +1,109 @@
+{
+  "version": 1,
+  "instructions": "This memory is for operating harbor, a deploy tool. Future sessions need harbor's current port, config file, auth method, retry policy, release command, log destination, deploy timeout and storage backend, plus a few one-off facts (names, channels, limits), and they must be able to tell which older values are no longer valid. The sessions also discuss other projects, hypothetical options and past incidents; those are not harbor's current configuration.",
+  "description": "Scale scenario: 48 generated sessions (see spec.json and generate.js; the transcripts are not committed). Eight facts change 2 to 4 times each between 2025-06-02 and 2026-04-07, some changes explicitly superseding the old value and some silent; 31 distractor sessions reuse the same vocabulary for other projects, hypotheticals, rejected options, past incidents and tool-output dumps; three facts are stated exactly once. Only the latest value is true; a superseded value may survive only next to a date or a superseded/no longer/was marker. Patterns are JavaScript regexes tested per document, case-insensitive.",
+  "extra_modes": ["notes-top-10"],
+  "dream_cost_gate": true,
+  "checks": [
+    { "id": "port-current", "description": "The current control API port (8443) is recorded", "type": "present", "pattern": "\\b8443\\b" },
+    { "id": "config-current", "description": "The current config file (/etc/harbor/conf.d/harbor.toml) is recorded", "type": "present", "pattern": "/etc/harbor/conf\\.d/harbor\\.toml" },
+    { "id": "auth-current", "description": "The current auth method (signed JWT bearer tokens, harbor token mint) is recorded", "type": "present", "pattern": "harbor token mint|JWT" },
+    { "id": "retry-current", "description": "The current retry policy (jitter-x3-cap-90s) is recorded", "type": "present", "pattern": "jitter-x3-cap-90s" },
+    { "id": "release-current", "description": "The current release command (harbor promote --signed) is recorded", "type": "present", "pattern": "harbor promote --signed" },
+    { "id": "log-current", "description": "The current log destination (/srv/harbor/logs/harbor.jsonl) is recorded", "type": "present", "pattern": "/srv/harbor/logs/harbor\\.jsonl" },
+    { "id": "timeout-current", "description": "The current deploy timeout (1500 seconds) is recorded", "type": "present", "pattern": "\\b1500 ?(seconds|secs?|s)\\b" },
+    { "id": "storage-current", "description": "The current storage backend (Postgres) is recorded", "type": "present", "pattern": "Postgres" },
+
+    {
+      "id": "port-old-marked",
+      "description": "Superseded ports (7400, 7411) survive only next to a date or a superseded/no longer/was marker",
+      "type": "absent_unless_marked",
+      "pattern": "\\b(7400|7411)\\b",
+      "marker": "\\b20\\d\\d-\\d\\d-\\d\\d\\b|supersed|no longer|\\bwas\\b|\\bwere\\b|formerly|previous|until|retired|replaced|deprecated|legacy|\\bold(er)?\\b|used to|historical"
+    },
+    {
+      "id": "config-old-marked",
+      "description": "Superseded config files (/etc/harbor/harbor.conf, ~/.harbor/config.yaml, /srv/harbor/harbor.toml) are marked",
+      "type": "absent_unless_marked",
+      "pattern": "/etc/harbor/harbor\\.conf|\\.harbor/config\\.yaml|/srv/harbor/harbor\\.toml",
+      "marker": "\\b20\\d\\d-\\d\\d-\\d\\d\\b|supersed|no longer|\\bwas\\b|\\bwere\\b|formerly|previous|until|retired|replaced|deprecated|legacy|\\bold(er)?\\b|used to|historical"
+    },
+    {
+      "id": "auth-old-marked",
+      "description": "Superseded auth methods (static key, basic auth, OIDC, mTLS) are marked",
+      "type": "absent_unless_marked",
+      "pattern": "X-Harbor-Key|htpasswd|basic auth|login --oidc|OIDC|mTLS|cert issue",
+      "marker": "\\b20\\d\\d-\\d\\d-\\d\\d\\b|supersed|no longer|\\bwas\\b|\\bwere\\b|formerly|previous|until|retired|replaced|deprecated|legacy|\\bold(er)?\\b|used to|historical"
+    },
+    {
+      "id": "retry-old-marked",
+      "description": "Superseded retry policies (fixed-5s, backoff-x2-cap-60s) are marked",
+      "type": "absent_unless_marked",
+      "pattern": "fixed-5s|backoff-x2-cap-60s",
+      "marker": "\\b20\\d\\d-\\d\\d-\\d\\d\\b|supersed|no longer|\\bwas\\b|\\bwere\\b|formerly|previous|until|retired|replaced|deprecated|legacy|\\bold(er)?\\b|used to|historical"
+    },
+    {
+      "id": "release-old-marked",
+      "description": "Superseded release commands (ship prod, release cut, rollout start) are marked",
+      "type": "absent_unless_marked",
+      "pattern": "harbor ship prod|harbor release cut|harbor rollout start",
+      "marker": "\\b20\\d\\d-\\d\\d-\\d\\d\\b|supersed|no longer|\\bwas\\b|\\bwere\\b|formerly|previous|until|retired|replaced|deprecated|legacy|\\bold(er)?\\b|used to|historical"
+    },
+    {
+      "id": "log-old-marked",
+      "description": "Superseded log destinations (/var/log/harbor/harbor.log, journald) are marked",
+      "type": "absent_unless_marked",
+      "pattern": "/var/log/harbor/harbor\\.log|journald",
+      "marker": "\\b20\\d\\d-\\d\\d-\\d\\d\\b|supersed|no longer|\\bwas\\b|\\bwere\\b|formerly|previous|until|retired|replaced|deprecated|legacy|\\bold(er)?\\b|used to|historical"
+    },
+    {
+      "id": "timeout-old-marked",
+      "description": "Superseded deploy timeouts (120, 450, 900 seconds) are marked",
+      "type": "absent_unless_marked",
+      "pattern": "\\b(120|450|900) ?(seconds|secs?|s)\\b",
+      "marker": "\\b20\\d\\d-\\d\\d-\\d\\d\\b|supersed|no longer|\\bwas\\b|\\bwere\\b|formerly|previous|until|retired|replaced|deprecated|legacy|\\bold(er)?\\b|used to|historical"
+    },
+    {
+      "id": "storage-old-marked",
+      "description": "Superseded storage backends (flat files, SQLite) are marked",
+      "type": "absent_unless_marked",
+      "pattern": "flat files|SQLite",
+      "marker": "\\b20\\d\\d-\\d\\d-\\d\\d\\b|supersed|no longer|\\bwas\\b|\\bwere\\b|formerly|previous|until|retired|replaced|deprecated|legacy|\\bold(er)?\\b|used to|historical"
+    },
+
+    { "id": "longtail-staging-cluster", "description": "Long-tail fact, stated once in 2025-06: the staging cluster is cormorant-stg-2", "type": "present", "pattern": "cormorant-stg-2" },
+    { "id": "longtail-pager-channel", "description": "Long-tail fact, stated once in 2025-06: incidents escalate through #harbor-pager", "type": "present", "pattern": "#harbor-pager" },
+    { "id": "longtail-rollback-depth", "description": "Long-tail fact, stated once in 2025-06: rollbacks are limited to 14 releases (--max-depth 14)", "type": "present", "pattern": "max-depth 14|14 releases" },
+
+    {
+      "id": "considered-not-adopted",
+      "description": "Options that were only considered or hypothetical (port 9977, /opt/harbor/harbor.json, LDAP bind, linear-20s, harbor deploy --all, syslog-ng, 3600 seconds, etcd) are never recorded as in use",
+      "type": "absent_unless_marked",
+      "pattern": "\\b9977\\b|/opt/harbor/harbor\\.json|LDAP bind|linear-20s|harbor deploy --all|syslog-ng|\\b3600 seconds\\b|\\betcd\\b",
+      "marker": "considered|did not|not adopted|rejected|never|hypothetical|what-if|decided against|declined|not chosen"
+    },
+
+    { "id": "index-complete", "description": "/_index.md lists every non-stub document", "type": "index_complete" },
+    { "id": "no-dangling-links", "description": "Every [[link]] resolves to a document", "type": "no_dangling_links" },
+    { "id": "doc-size-limit", "description": "No document over 10,000 bytes (a dump of the transcripts is not a wiki)", "type": "max_doc_bytes", "max": 10000 },
+    { "id": "doc-count-sane", "description": "Between 4 and 24 documents", "type": "doc_count", "min": 4, "max": 24 }
+  ],
+  "questions": [
+    { "id": "q-port", "question": "Which TCP port does the harbor control API listen on now? Reply with only the port number.", "answer": "\\b8443\\b", "reject": "\\b(7400|7411)\\b" },
+    { "id": "q-config", "question": "Which file is harbor's config file right now?", "answer": "/etc/harbor/conf\\.d/harbor\\.toml", "reject": "/etc/harbor/harbor\\.conf|\\.harbor/config\\.yaml|/srv/harbor/harbor\\.toml" },
+    { "id": "q-auth", "question": "What is harbor's current auth method?", "answer": "\\bJWT\\b|token mint", "reject": "X-Harbor-Key|htpasswd|basic auth|login --oidc|OIDC|mTLS|cert issue" },
+    { "id": "q-retry", "question": "What retry policy does harbor use for failed deploy steps?", "answer": "jitter-x3-cap-90s", "reject": "fixed-5s|backoff-x2-cap-60s" },
+    { "id": "q-release", "question": "Which command releases harbor?", "answer": "harbor promote --signed", "reject": "harbor ship prod|harbor release cut|harbor rollout start" },
+    { "id": "q-log", "question": "Where does harbor write its logs?", "answer": "/srv/harbor/logs/harbor\\.jsonl|harbor\\.jsonl", "reject": "/var/log/harbor|journald" },
+    { "id": "q-timeout", "question": "What is harbor's deploy timeout?", "answer": "\\b1500\\b", "reject": "\\b(120|450|900) ?(seconds|secs?|s)\\b" },
+    { "id": "q-storage", "question": "Which storage backend does harbor use?", "answer": "Postgres", "reject": "flat files|SQLite" },
+    { "id": "q-port-b", "question": "What network port should a client connect to for the harbor API?", "answer": "\\b8443\\b", "reject": "\\b(7400|7411)\\b" },
+    { "id": "q-config-b", "question": "Which file does harbor read its settings from?", "answer": "/etc/harbor/conf\\.d/harbor\\.toml", "reject": "/etc/harbor/harbor\\.conf|\\.harbor/config\\.yaml|/srv/harbor/harbor\\.toml" },
+    { "id": "q-release-b", "question": "What command do I run to publish a new harbor version?", "answer": "harbor promote --signed", "reject": "harbor ship prod|harbor release cut|harbor rollout start" },
+    { "id": "q-timeout-b", "question": "How long does harbor wait before giving up on a deploy?", "answer": "\\b1500\\b", "reject": "\\b(120|450|900) ?(seconds|secs?|s)\\b" },
+    { "id": "q-storage-b", "question": "Where does harbor keep its state data?", "answer": "Postgres", "reject": "flat files|SQLite" },
+    { "id": "q-cluster", "question": "What is the name of the staging cluster harbor deploys to?", "answer": "cormorant-stg-2" },
+    { "id": "q-pager", "question": "Through which channel are harbor incidents escalated to on-call?", "answer": "#harbor-pager" },
+    { "id": "q-rollback-depth", "question": "How many releases back will harbor refuse to roll back past?", "answer": "\\b14\\b" }
+  ]
+}

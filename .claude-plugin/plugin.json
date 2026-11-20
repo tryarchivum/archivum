@@ -1,0 +1,25 @@
+{
+  "name": "archivum",
+  "version": "0.2.14",
+  "description": "Local-first long-term memory for AI agents: notes, transcripts, a review-first dream pass and a markdown wiki.",
+  "license": "MIT",
+  "keywords": [
+    "memory",
+    "agent-memory",
+    "mcp-server",
+    "wiki",
+    "claude-code"
+  ],
+  "skills": "./skills",
+  "mcpServers": {
+    "archivum": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "archivums@0.2.14",
+        "mcp"
+      ]
+    }
+  },
+  "homepage": "https://tryarchivum.com"
+}

@@ -1,0 +1,26 @@
+name: release
+# Publishes the single package archivums (it carries the core library inside) when a tag like v0.2.0 is pushed. Needs the repository secret NPM_TOKEN.
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+  id-token: write # npm provenance
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - name: Publish archivums (prepack copies packages/core/src into it)
+        run: npm publish --workspace packages/cli --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

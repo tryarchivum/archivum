@@ -1,0 +1,13 @@
+{"type":"summary","summary":"Setting up the build","leafUuid":"x"}
+{"type":"file-history-snapshot","messageId":"m0","snapshot":{}}
+{"parentUuid":null,"isSidechain":false,"type":"user","message":{"role":"user","content":"How do I run the tests?"},"uuid":"u1","timestamp":"2026-11-15T10:00:00.000Z","cwd":"/work/demo"}
+{"parentUuid":"u1","isSidechain":false,"type":"assistant","message":{"role":"assistant","content":[{"type":"thinking","thinking":"hidden reasoning"},{"type":"text","text":"Let me look at package.json."},{"type":"tool_use","id":"toolu_1","name":"Read","input":{"file_path":"package.json"}}]},"uuid":"a1","timestamp":"2026-11-15T10:00:02.000Z"}
+{"parentUuid":"a1","isSidechain":false,"type":"user","message":{"role":"user","content":[{"type":"tool_result","tool_use_id":"toolu_1","content":[{"type":"text","text":"{\"scripts\":{\"test\":\"node --test\"}}"}]}]},"uuid":"u2","timestamp":"2026-11-15T10:00:03.000Z"}
+{"parentUuid":"u2","isSidechain":false,"type":"assistant","message":{"role":"assistant","content":[{"type":"text","text":"Run `npm test`."},{"type":"text","text":"It uses node --test."}]},"uuid":"a2","timestamp":"not-a-date"}
+{"parentUuid":"a2","isSidechain":true,"type":"user","message":{"role":"user","content":"subagent chatter that must be skipped"},"uuid":"s1"}
+{"type":"user","isMeta":true,"message":{"role":"user","content":"<meta caveat>"},"uuid":"m1"}
+{"type":"system","subtype":"info","content":"not a message"}
+{"type":"user","message":{"role":"user","content":[{"type":"image","source":{"type":"base64","data":"AAAA"}}]},"uuid":"u3"}
+this line is not json {{{
+{"type":"assistant","message":"not an object"}
+{"type":"user","message":{"role":"user","content":"Thanks!"},"uuid":"u4","timestamp":"2026-11-15T10:01:00Z"}

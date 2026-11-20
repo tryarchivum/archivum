@@ -1,0 +1,28 @@
+TRANSCRIPT trn_evalquillon00000000009 source=claude-code events=5
+
+SYSTEM:
+Session date: 2026-04-10. Project: quillon, release 0.7.1.
+
+USER:
+Tidy the CI workflow now that we are past 0.6.0.
+
+ASSISTANT:
+Looking at the current workflow file.
+
+TOOL bash:
+$ git diff .github/workflows/ci.yml
+@@ jobs.test.steps
+   - uses: actions/cache@v4
+     with:
+       path: .quillon-cache
+-  - name: Test
+-    env:
+-      QUILLON_HOME: ${{ runner.temp }}/qh
+-    run: make test
++  - name: Test
++    run: make test
++  - name: Check feed
++    run: quillon check --strict
+
+ASSISTANT:
+Done. The workflow at .github/workflows/ci.yml no longer sets QUILLON_HOME for the Test step, runs plain `make test`, and gained a strict feed check after it. The cache step still stores `.quillon-cache`.

@@ -1,0 +1,22 @@
+TRANSCRIPT trn_evalcontra000000000002 source=claude-code events=5
+
+SYSTEM:
+Session date: 2026-02-16. Project: fennelq, version 0.8.4.
+
+USER:
+New laptop. Get fennelq running locally against the dev database.
+
+ASSISTANT:
+Reading the example environment file and running the migrations.
+
+TOOL bash:
+$ cat .env.example
+FENNELQ_DATABASE_URL=postgres://localhost/fennel
+FENNELQ_LOG_LEVEL=info
+$ fennelq migrate up
+applied 14 migrations
+$ fennelq worker --concurrency 2
+worker started, polling every 1s
+
+ASSISTANT:
+Local setup works: the connection URL comes from FENNELQ_DATABASE_URL, `fennelq migrate up` applied 14 migrations and a worker with `--concurrency 2` started.

@@ -1,0 +1,29 @@
+TRANSCRIPT trn_evaldrift0000000000004 source=claude-code events=7
+
+SYSTEM:
+Session date: 2026-02-23. Project: pelletd, version 1.3.0.
+
+USER:
+Prometheus node_exporter was installed on the same box and now pelletd will not start.
+
+ASSISTANT:
+That sounds like a port clash. Let me look.
+
+TOOL bash:
+$ journalctl -u pelletd -n 3 --no-pager
+pelletd[812]: fatal: listen tcp 0.0.0.0:9100: bind: address already in use
+$ ss -ltnp | grep 9100
+LISTEN 0 4096 *:9100 users:(("node_exporter",pid=455,fd=3))
+
+ASSISTANT:
+node_exporter owns port 9100. We move pelletd instead. The 1.3.0 default stays 9100, so the config has to be changed.
+
+TOOL bash:
+$ sed -i 's/9100/9115/' ~/.config/pelletd/config.yaml
+$ grep listen ~/.config/pelletd/config.yaml
+listen: 0.0.0.0:9115
+$ systemctl restart pelletd && curl -s -H "X-Pellet-Key: dev" localhost:9115/healthz
+ok
+
+ASSISTANT:
+pelletd now listens on port 9115 (changed 2026-02-23 because of the clash with node_exporter on 9100). Config stays in ~/.config/pelletd/config.yaml and auth is still the X-Pellet-Key header.

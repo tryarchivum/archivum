@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "archivum": {
+      "command": "npx",
+      "args": ["-y", "archivums@0.2.14", "mcp"],
+      "startup_timeout_sec": 60
+    }
+  }
+}

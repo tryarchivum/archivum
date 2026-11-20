@@ -1,0 +1,20 @@
+TRANSCRIPT trn_evalcontra000000000005 source=claude-code events=5
+
+SYSTEM:
+Session date: 2026-03-12. Project: fennelq, version 0.9.0.
+
+USER:
+Heads up: the wiki still says fennelq stores jobs in Redis and reads FENNELQ_REDIS_URL. That is wrong since 0.9.0, which we released on 2026-03-09: the Redis backend was removed and only Postgres is supported now.
+
+ASSISTANT:
+I will verify against the release notes and the config loader.
+
+TOOL bash:
+$ sed -n 1,7p CHANGELOG.md
+## 0.9.0 - 2026-03-09
+- Removed: the Redis backend and FENNELQ_REDIS_URL. Postgres (FENNELQ_DATABASE_URL) is the only supported store.
+$ grep -rn "REDIS" src/ | wc -l
+0
+
+ASSISTANT:
+Confirmed. Since 0.9.0 (2026-03-09) jobs are stored in Postgres only, configured through FENNELQ_DATABASE_URL. Any note about Redis or FENNELQ_REDIS_URL is out of date.

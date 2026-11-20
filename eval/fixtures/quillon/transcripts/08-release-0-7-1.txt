@@ -1,0 +1,41 @@
+TRANSCRIPT trn_evalquillon00000000008 source=claude-code events=9
+
+SYSTEM:
+Session date: 2026-04-03. Project: quillon, releasing 0.7.1 after the token was rotated.
+
+USER:
+Token is rotated. Please do the release, 0.7.0 never went out so go straight to 0.7.1.
+
+ASSISTANT:
+Running the pre-release checks in the usual order.
+
+TOOL bash:
+$ make test
+node --test test/
+TAP version 13
+# tests 140
+# pass 140
+# fail 0
+$ quillon check --strict
+checking 16 entries
+0 problems
+$ quillon build --base-url https://notes.example.test --max-entries 200
+wrote 18 files to ./site-out (231 KB)
+
+ASSISTANT:
+Tests (140 passing, no environment variable needed), the strict check and a production build with `--base-url` and `--max-entries 200` all succeed. The feed cap defaults to 50 entries, so 200 is deliberate for the public feed. Now the release itself.
+
+TOOL bash:
+$ make release VERSION=0.7.1
+npm publish --access public
++ quillon@0.7.1
+tagged v0.7.1
+
+ASSISTANT:
+Published quillon 0.7.1 and tagged v0.7.1.
+
+USER:
+Great. Please write down the release checklist so I stop forgetting it.
+
+ASSISTANT:
+Release checklist as run today: `make test`, then `quillon check --strict`, then a production build with `quillon build --base-url <url> --max-entries 200`, then `make release VERSION=x.y.z` (needs QUILLON_PUBLISH_TOKEN in the environment).

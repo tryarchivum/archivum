@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 330" role="img" aria-label="Terminal: archivum remember, recall and status">
+  <rect width="760" height="330" rx="12" fill="#14121f"/>
+  <circle cx="22" cy="20" r="6" fill="#ff5f56"/><circle cx="42" cy="20" r="6" fill="#ffbd2e"/><circle cx="62" cy="20" r="6" fill="#27c93f"/>
+  <g font-family="ui-monospace,Menlo,Consolas,monospace" font-size="14">
+    <text x="24" y="58" fill="#a78bfa">$</text><text x="42" y="58" fill="#f4f1ff">archivum remember "tests: npm test -- --runInBand (shared sqlite file)"</text>
+    <text x="24" y="80" fill="#8b87a8">Saved note note_InNlF-AKclBRqjra3OdSQg.</text>
+    <text x="24" y="116" fill="#a78bfa">$</text><text x="42" y="116" fill="#f4f1ff">archivum recall "how do I run tests"</text>
+    <text x="24" y="138" fill="#7ee0a1">[note]</text><text x="76" y="138" fill="#f4f1ff">tests: npm test -- --runInBand (shared sqlite file)  score=2.673</text>
+    <text x="24" y="174" fill="#a78bfa">$</text><text x="42" y="174" fill="#f4f1ff">archivum status</text>
+    <text x="24" y="196" fill="#8b87a8">Notes:       2</text>
+    <text x="24" y="214" fill="#8b87a8">Wiki docs:   0</text>
+    <text x="24" y="232" fill="#8b87a8">Transcripts: 0 pending, 0 dreamed</text>
+    <text x="24" y="250" fill="#8b87a8">Proposals:   0 awaiting review</text>
+    <text x="24" y="290" fill="#a78bfa">$</text><text x="42" y="290" fill="#f4f1ff">archivum dream</text><text x="170" y="290" fill="#8b87a8"># estimate, confirm, review the diff, then apply</text>
+  </g>
+</svg>

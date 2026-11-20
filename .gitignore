@@ -1,0 +1,8 @@
+node_modules
+dist
+.DS_Store
+data/
+.env
+eval/results/
+server.log
+packages/cli/vendor

@@ -1,0 +1,25 @@
+TRANSCRIPT trn_evalquillon00000000004 source=claude-code events=7
+
+SYSTEM:
+Session date: 2026-03-14. Project: quillon, release 0.4.2.
+
+USER:
+I wanted to preview the site, so I followed the wiki and looked in ./public after building. It was empty and I wasted ten minutes. Where does the build output actually go, and how do I preview it?
+
+ASSISTANT:
+Let me build and look at the real output directory.
+
+TOOL bash:
+$ quillon build && ls
+wrote 14 files to ./site-out (212 KB)
+CHANGELOG.md  Makefile  entries  package.json  quillon.toml  site-out  test
+
+ASSISTANT:
+There is no ./public at all. The output directory is ./site-out. So the wiki claim that the build writes into `public` is wrong. For previewing, there is a serve command.
+
+TOOL bash:
+$ quillon serve --port 4711 --watch
+serving site-out at http://localhost:4711 (watching entries/ for changes)
+
+ASSISTANT:
+Preview works: `quillon serve --port 4711 --watch` serves site-out on port 4711 and rebuilds when entries change. You can change the output location with `--out <dir>` on the build command, but the default is site-out, not public.

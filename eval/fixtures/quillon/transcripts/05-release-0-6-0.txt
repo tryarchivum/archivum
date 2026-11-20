@@ -1,0 +1,36 @@
+TRANSCRIPT trn_evalquillon00000000005 source=claude-code events=7
+
+SYSTEM:
+Session date: 2026-03-20. Project: quillon, just upgraded from 0.4.2 to 0.6.0.
+
+USER:
+We upgraded to 0.6.0 on the 18th. Do the tests still need the QUILLON_HOME dance?
+
+ASSISTANT:
+Checking the changelog first.
+
+TOOL bash:
+$ sed -n 1,14p CHANGELOG.md
+## 0.6.0 - 2026-03-18
+- Tests now create their own temporary cache directory; QUILLON_HOME no longer has to be set to run the suite.
+- The cache guard (E_HOME_UNSET) now only applies to real runs of the CLI, not to tests.
+- `quillon check` prints the entry count first.
+## 0.5.0 - 2026-02-20
+- Added `quillon serve`.
+
+ASSISTANT:
+The changelog says the requirement was dropped. Verifying by running the suite with the variable unset.
+
+TOOL bash:
+$ env | grep -c QUILLON_HOME
+0
+$ make test
+node --test test/
+TAP version 13
+# tests 131
+# pass 131
+# fail 0
+# duration_ms 4688.2
+
+ASSISTANT:
+Confirmed on 0.6.0: plain `make test` passes (131 tests) with no environment variable set. From 0.6.0 on the `QUILLON_HOME=$PWD/.qhome` prefix is unnecessary; it was only needed up to 0.5.x.

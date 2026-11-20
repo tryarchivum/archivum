@@ -1,0 +1,24 @@
+TRANSCRIPT trn_evalcontra000000000006 source=claude-code events=6
+
+SYSTEM:
+Session date: 2026-03-16. Project: fennelq, version 0.9.1.
+
+USER:
+I looked at the production config and it does not match what we wrote down about dead-letter retention. Can you check?
+
+ASSISTANT:
+Reading the production config file.
+
+TOOL bash:
+$ grep -n -B1 -A1 dead_letter /etc/fennelq/prod.yaml
+17-queue:
+18:  dead_letter_ttl: "30d"
+19-  max_attempts: 5
+$ git log -1 --format=%cs -- docs/runbook.md
+2026-01-30
+
+USER:
+So prod says 30 days and the runbook says 14 days. I honestly do not know which one is right: the runbook may be stale, or someone may have overridden it in prod on purpose. Do not pick one. I will ask Priya on the platform team.
+
+ASSISTANT:
+Understood. I will not choose. Facts: docs/runbook.md (last changed 2026-01-30) says 14 days; /etc/fennelq/prod.yaml says dead_letter_ttl 30d; the owner of the decision is unconfirmed until Priya answers.

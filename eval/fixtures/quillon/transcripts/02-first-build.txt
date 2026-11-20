@@ -1,0 +1,30 @@
+TRANSCRIPT trn_evalquillon00000000002 source=claude-code events=7
+
+SYSTEM:
+Session date: 2026-03-05. Project: quillon, release 0.4.2.
+
+USER:
+Try building the sample notes folder and tell me what comes out. I want to know if it is ready to show the team.
+
+ASSISTANT:
+Running a plain build against the sample folder.
+
+TOOL bash:
+$ quillon build
+quillon 0.4.2
+reading entries/ ... 14 entries (2 drafts skipped)
+rendering feed.xml, atom.xml, index.html
+wrote 14 files to ./site-out (212 KB)
+done in 1.9s
+
+ASSISTANT:
+The build works. It produced a feed, an Atom file, and the HTML index for 14 entries; the 2 drafts were skipped. Let me also check what Node version the tool needs before I tell the team how to install it.
+
+TOOL bash:
+$ cat package.json | grep -A3 engines
+  "engines": {
+    "node": ">=20.11"
+  },
+
+ASSISTANT:
+Quillon needs Node 20.11 or newer (from the `engines` field in package.json). The sample site is ready to share.

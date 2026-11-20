@@ -1,0 +1,367 @@
+{
+  "version": 1,
+  "description": "Spec for the `scale` scenario: generate.js turns it into 48 labelled transcripts (seeded PRNG, nothing random at run time). Harbor is a fictional deploy tool. Eight facts change 2 to 4 times each across 17 'fact' sessions (2025-06-02 to 2026-04-07); 31 distractor sessions reuse the same vocabulary in other contexts. Templates use {slots}; U/A/T are USER/ASSISTANT/TOOL bash events.",
+  "seed": 20260115,
+  "idPrefix": "trn_evalscale",
+  "project": "harbor",
+  "projectDesc": "a deploy tool",
+  "sessions": 48,
+  "minDistractors": 30,
+  "window": { "start": "2025-06-02", "end": "2026-04-17" },
+  "minEvents": 6,
+  "maxEvents": 12,
+  "distractorMix": { "other": 9, "hypo": 5, "considered": 5, "incident": 6, "dump": 6 },
+  "otherProjects": [
+    { "name": "lumen", "desc": "a dashboard backend" },
+    { "name": "tidepool", "desc": "a metrics collector" },
+    { "name": "corvid", "desc": "a job scheduler" },
+    { "name": "anvil", "desc": "a build cache service" },
+    { "name": "marlin", "desc": "a feature-flag service" }
+  ],
+  "openers": [
+    "Let's continue with the {proj} work.",
+    "Starting a new session on {proj}; a few small things today.",
+    "Back on {proj} again."
+  ],
+  "ack": [
+    "Noted.",
+    "Got it, I will keep that in mind for the rest of the session.",
+    "Understood.",
+    "OK, written down in my working notes for this task."
+  ],
+  "restate": "Confirmed on {date}: harbor's {noun} is {v}.",
+  "explicit": [
+    "This replaces the earlier {noun} ({old}); that value is superseded and no longer used.",
+    "Correction for the notes: the {noun} was {old} until now, and that is no longer true as of {date}.",
+    "The previous {noun}, {old}, is retired from {date}; do not use it any more."
+  ],
+  "causes": [
+    "a full disk on the build host",
+    "an expired TLS certificate",
+    "a bad rollout of a sidecar",
+    "a noisy neighbour on the CI runner"
+  ],
+  "families": [
+    {
+      "id": "port",
+      "noun": "listen port",
+      "key": "api.port",
+      "values": [
+        { "v": "7400", "date": "2025-06-02", "how": "initial" },
+        { "v": "7411", "date": "2025-08-19", "how": "silent" },
+        { "v": "8443", "date": "2026-01-27", "how": "explicit" }
+      ],
+      "statements": [
+        "For the record, the harbor control API listens on port {v} as of {date}.",
+        "Clients should connect to harbor on port {v}; that is what the listener is bound to since {date}.",
+        "Heads up: the harbor API port is {v} now ({date})."
+      ],
+      "tool": [
+        { "cmd": "harbor config get api.port", "out": "{v}" },
+        { "cmd": "ss -ltnp | grep harbor", "out": "LISTEN 0 128 0.0.0.0:{v} users:((\"harbor\",pid=2211,fd=7))" }
+      ],
+      "others": ["7400", "7411", "8443", "9210", "3000"],
+      "considered": ["9977"]
+    },
+    {
+      "id": "config",
+      "noun": "config file",
+      "key": "config.path",
+      "values": [
+        { "v": "/etc/harbor/harbor.conf", "date": "2025-06-02", "how": "initial" },
+        { "v": "~/.harbor/config.yaml", "date": "2025-07-21", "how": "silent" },
+        { "v": "/srv/harbor/harbor.toml", "date": "2025-10-28", "how": "explicit" },
+        { "v": "/etc/harbor/conf.d/harbor.toml", "date": "2026-03-03", "how": "silent" }
+      ],
+      "statements": [
+        "The harbor config file is {v} (as of {date}).",
+        "harbor reads its settings from {v}; we settled on that on {date}.",
+        "Put harbor's configuration in {v} from {date} on."
+      ],
+      "tool": [
+        { "cmd": "harbor config path", "out": "{v}" },
+        { "cmd": "harbor doctor", "out": "config file: {v}\nchecks passed: 6" }
+      ],
+      "others": ["/etc/{proj}/{proj}.conf", "/srv/{proj}/{proj}.toml", "~/.{proj}/config.yaml", "/etc/{proj}/conf.d/{proj}.toml"],
+      "considered": ["/opt/harbor/harbor.json"]
+    },
+    {
+      "id": "auth",
+      "noun": "auth method",
+      "key": "auth.method",
+      "values": [
+        { "v": "a static API key in the X-Harbor-Key header", "date": "2025-06-02", "how": "initial" },
+        { "v": "HTTP basic auth with a users.htpasswd file", "date": "2025-07-21", "how": "explicit" },
+        { "v": "OIDC device login (harbor login --oidc)", "date": "2025-10-07", "how": "silent" },
+        { "v": "mTLS client certificates (harbor cert issue)", "date": "2026-01-06", "how": "explicit" },
+        { "v": "signed JWT bearer tokens (harbor token mint)", "date": "2026-03-17", "how": "silent" }
+      ],
+      "statements": [
+        "harbor authenticates API clients with {v}; effective {date}.",
+        "As of {date} the harbor auth method is {v}.",
+        "Sign-in to harbor works through {v} from {date}."
+      ],
+      "tool": [
+        { "cmd": "harbor doctor --show-auth", "out": "auth method: {v}" },
+        { "cmd": "harbor config get auth.method", "out": "{v}" }
+      ],
+      "others": [
+        "a static API key in the X-{proj}-Key header",
+        "HTTP basic auth with a users.htpasswd file",
+        "OIDC device login",
+        "mTLS client certificates",
+        "signed JWT bearer tokens"
+      ],
+      "considered": ["LDAP bind"]
+    },
+    {
+      "id": "retry",
+      "noun": "retry policy",
+      "key": "deploy.retry",
+      "values": [
+        { "v": "fixed-5s", "date": "2025-06-09", "how": "initial" },
+        { "v": "backoff-x2-cap-60s", "date": "2025-08-19", "how": "explicit" },
+        { "v": "jitter-x3-cap-90s", "date": "2026-02-10", "how": "silent" }
+      ],
+      "statements": [
+        "The harbor retry policy is {v} as of {date}.",
+        "Failed deploy steps in harbor are retried with {v} (since {date}).",
+        "From {date} harbor retries transient failures using {v}."
+      ],
+      "tool": [
+        { "cmd": "harbor config get deploy.retry", "out": "{v}" },
+        { "cmd": "harbor doctor", "out": "retry policy: {v}\nchecks passed: 6" }
+      ],
+      "others": ["fixed-5s", "backoff-x2-cap-60s", "jitter-x3-cap-90s", "fixed-15s"],
+      "considered": ["linear-20s"]
+    },
+    {
+      "id": "release",
+      "noun": "release command",
+      "key": "release.cmd",
+      "values": [
+        { "v": "harbor ship prod", "date": "2025-06-09", "how": "initial" },
+        { "v": "harbor release cut --channel stable", "date": "2025-09-23", "how": "explicit" },
+        { "v": "harbor rollout start --wave 1", "date": "2025-11-18", "how": "silent" },
+        { "v": "harbor promote --signed", "date": "2026-03-17", "how": "explicit" }
+      ],
+      "statements": [
+        "To release harbor itself, run `{v}`; that is the release command as of {date}.",
+        "Publishing a new harbor version is done with `{v}` since {date}.",
+        "Since {date} the way to ship a harbor release is `{v}`."
+      ],
+      "tool": [
+        { "cmd": "harbor help release", "out": "usage: {v}" },
+        { "cmd": "grep -n -A1 release Makefile", "out": "3:release:\n4:\t{v}" }
+      ],
+      "others": ["{proj} ship prod", "{proj} release cut --channel stable", "{proj} rollout start --wave 1", "{proj} promote --signed"],
+      "considered": ["harbor deploy --all"]
+    },
+    {
+      "id": "log",
+      "noun": "log destination",
+      "key": "log.sink",
+      "values": [
+        { "v": "/var/log/harbor/harbor.log", "date": "2025-06-09", "how": "initial" },
+        { "v": "journald (unit harbor.service)", "date": "2025-09-30", "how": "silent" },
+        { "v": "/srv/harbor/logs/harbor.jsonl", "date": "2025-12-09", "how": "explicit" }
+      ],
+      "statements": [
+        "harbor writes its logs to {v} (from {date}).",
+        "The harbor log location is {v} as of {date}.",
+        "Look for harbor's output in {v} since {date}."
+      ],
+      "tool": [
+        { "cmd": "harbor config get log.sink", "out": "{v}" },
+        { "cmd": "harbor doctor", "out": "log destination: {v}\nchecks passed: 6" }
+      ],
+      "others": ["/var/log/{proj}/{proj}.log", "journald", "/srv/{proj}/logs/{proj}.jsonl"],
+      "considered": ["syslog-ng"]
+    },
+    {
+      "id": "timeout",
+      "noun": "deploy timeout",
+      "key": "deploy.timeout",
+      "values": [
+        { "v": "120 seconds", "date": "2025-06-16", "how": "initial" },
+        { "v": "450 seconds", "date": "2025-09-30", "how": "explicit" },
+        { "v": "900 seconds", "date": "2026-01-06", "how": "silent" },
+        { "v": "1500 seconds", "date": "2026-04-07", "how": "explicit" }
+      ],
+      "statements": [
+        "The harbor deploy timeout is {v} as of {date}.",
+        "harbor waits {v} before giving up on a deploy (since {date}).",
+        "From {date} harbor aborts a deploy that runs longer than {v}."
+      ],
+      "tool": [
+        { "cmd": "harbor config get deploy.timeout", "out": "{v}" },
+        { "cmd": "harbor doctor", "out": "deploy timeout: {v}\nchecks passed: 6" }
+      ],
+      "others": ["120 seconds", "450 seconds", "900 seconds", "1500 seconds", "60 seconds"],
+      "considered": ["3600 seconds"]
+    },
+    {
+      "id": "storage",
+      "noun": "storage backend",
+      "key": "state.backend",
+      "values": [
+        { "v": "flat files under /var/lib/harbor", "date": "2025-06-16", "how": "initial" },
+        { "v": "SQLite (harbor.db)", "date": "2025-10-28", "how": "silent" },
+        { "v": "Postgres 15", "date": "2026-03-03", "how": "explicit" }
+      ],
+      "statements": [
+        "harbor's storage backend is {v} as of {date}.",
+        "harbor keeps its state in {v} from {date}.",
+        "From {date} harbor persists deployment state in {v}."
+      ],
+      "tool": [
+        { "cmd": "harbor config get state.backend", "out": "{v}" },
+        { "cmd": "harbor doctor", "out": "storage backend: {v}\nchecks passed: 6" }
+      ],
+      "others": ["flat files under /var/lib/{proj}", "SQLite ({proj}.db)", "Postgres 15", "Redis 7"],
+      "considered": ["etcd"]
+    }
+  ],
+  "longtail": [
+    {
+      "id": "staging-cluster",
+      "date": "2025-06-02",
+      "user": "Side note for later: the staging cluster that harbor deploys to is named cormorant-stg-2.",
+      "assistant": "Understood, I will remember the staging cluster name for when you ask."
+    },
+    {
+      "id": "pager-channel",
+      "date": "2025-06-09",
+      "user": "One more thing worth remembering: incidents with harbor are escalated to on-call through the channel #harbor-pager.",
+      "assistant": "Noted, that is the escalation channel."
+    },
+    {
+      "id": "rollback-depth",
+      "date": "2025-06-16",
+      "user": "FYI harbor will not roll back more than 14 releases; the limit is --max-depth 14 and it cannot be raised.",
+      "assistant": "Good to know, I have that limit in mind."
+    }
+  ],
+  "templates": {
+    "other": [
+      { "events": [
+        { "r": "U", "t": "Quick question about {proj}: what is its {noun}?" },
+        { "r": "A", "t": "The {proj} {noun} is {x} (checked {date}); that is separate from harbor." }
+      ] },
+      { "events": [
+        { "r": "T", "t": "$ {proj} config get {key}\n{x}" },
+        { "r": "A", "t": "So {proj}'s {noun} is {x}. Nothing to change for harbor." }
+      ] },
+      { "events": [
+        { "r": "U", "t": "For the {proj} runbook: its {noun} is {x}. Please add that." },
+        { "r": "A", "t": "Added to the {proj} runbook draft on {date}, not to harbor's." }
+      ] }
+    ],
+    "hypo": [
+      { "needsOld": true, "events": [
+        { "r": "U", "t": "Hypothetically, what would happen if harbor's {noun} were {old} again?" },
+        { "r": "A", "t": "Purely hypothetical: we would have to update the docs and the CI step. No change was made on {date} and none is planned." }
+      ] },
+      { "events": [
+        { "r": "U", "t": "Brainstorm only: could harbor use {alt} for the {noun}?" },
+        { "r": "A", "t": "It could work, but this is a what-if. Nothing is decided and nothing was changed on {date}." }
+      ] }
+    ],
+    "considered": [
+      { "events": [
+        { "r": "U", "t": "We looked at {alt} for the harbor {noun} today. What did we decide?" },
+        { "r": "A", "t": "We considered {alt} but did not do it: the migration cost was too high. The {noun} stays as it is." }
+      ] },
+      { "events": [
+        { "r": "A", "t": "Evaluation note ({date}): {alt} for harbor's {noun} was considered and rejected, not adopted." },
+        { "r": "U", "t": "Fine, drop it." }
+      ] }
+    ],
+    "incident": [
+      { "needsOld": true, "events": [
+        { "r": "U", "t": "Write up the incident from {incdate}." },
+        { "r": "A", "t": "Incident review: on {incdate} a deploy stalled. At that time harbor's {noun} was {old}. The root cause was {cause}; the {noun} was not the cause." }
+      ] },
+      { "needsOld": true, "events": [
+        { "r": "T", "t": "$ cat postmortems/{incdate}.md\n# Postmortem {incdate}\nharbor {noun}: {old}\ntrigger: {cause}" },
+        { "r": "A", "t": "Quoting the postmortem of {incdate}: the {noun} was {old} back then. Reference material only." }
+      ] }
+    ],
+    "dump": [
+      { "needsOld": true, "events": [
+        { "r": "U", "t": "Grep our notes for anything about the {noun}." },
+        { "r": "T", "t": "$ grep -rn \"{noun}\" notes/ vendor/\nvendor/gantry/README.md:41: default {noun}: {g1}\nvendor/gantry/CHANGELOG.md:9: gantry 3.2 changed the {noun} default to {g2}\nnotes/{incdate}.md:3: harbor {noun} {old}" },
+        { "r": "A", "t": "Only the vendored gantry docs and one dated note mention it; none of that describes harbor's setup today." }
+      ] },
+      { "events": [
+        { "r": "T", "t": "$ {proj} status --verbose | head -4\n{proj} {noun}: {x}\n{proj} uptime: 41 days\n{proj} build: 7c1e9" },
+        { "r": "A", "t": "That is the status dump of {proj} on {date}, unrelated to harbor." }
+      ] }
+    ]
+  },
+  "filler": [
+    { "events": [
+      { "r": "U", "t": "Can you rerun the unit tests for {proj}'s plugin loader?" },
+      { "r": "T", "t": "$ npm test -- plugin-loader\nok 1 loads built-in plugins\nok 2 rejects duplicate plugin names\n2 passing (310ms)" },
+      { "r": "A", "t": "Both plugin loader tests pass." }
+    ] },
+    { "events": [
+      { "r": "U", "t": "Please bump gantry-client to the latest patch release." },
+      { "r": "A", "t": "Bumped gantry-client in package.json and refreshed the lockfile. No API changes." }
+    ] },
+    { "events": [
+      { "r": "A", "t": "Reviewed the open pull request on the help text; two typos fixed." }
+    ] },
+    { "events": [
+      { "r": "U", "t": "The CI job timeout is 20 minutes and the docs build keeps hitting it. Any idea?" },
+      { "r": "A", "t": "The docs build is slow because it rebuilds the search index each time. Caching the index directory should keep it well under the limit." }
+    ] },
+    { "events": [
+      { "r": "U", "t": "Which port does the docs preview server use?" },
+      { "r": "T", "t": "$ grep -n port docs/preview.config.js\n12:  port: 5173," },
+      { "r": "A", "t": "The docs preview dev server uses port 5173. That is unrelated to the {proj} service itself." }
+    ] },
+    { "events": [
+      { "r": "U", "t": "Rename the CLI flag --dry to --dry-run in the help output." },
+      { "r": "A", "t": "Renamed in the help text and the completion script; kept --dry as a hidden alias." }
+    ] },
+    { "events": [
+      { "r": "T", "t": "$ git log --oneline -3\nc41e2a7 fix typo in error message\n9d03b1f update contributing guide\n5aa7e10 bump gantry-client" },
+      { "r": "A", "t": "Nothing unexpected in the recent history." }
+    ] },
+    { "events": [
+      { "r": "U", "t": "Why is the log level set to debug in the test fixtures?" },
+      { "r": "A", "t": "It is only the fixture default so failures are easier to read; the production log level is configured separately." }
+    ] },
+    { "events": [
+      { "r": "U", "t": "Add a --version flag to the status command." },
+      { "r": "A", "t": "Added; {proj} status --version prints the version string and exits 0." }
+    ] },
+    { "events": [
+      { "r": "A", "t": "Left a TODO comment about the config parser's error messages; nothing to do today." }
+    ] },
+    { "events": [
+      { "r": "U", "t": "Draft a short changelog entry for this week." },
+      { "r": "A", "t": "Draft: fixed typos in the help text, bumped gantry-client, documented the docs preview server." }
+    ] },
+    { "events": [
+      { "r": "T", "t": "$ node --version\nv22.4.0" },
+      { "r": "A", "t": "Node 22 as expected." }
+    ] },
+    { "events": [
+      { "r": "U", "t": "Remind me where the retry helper lives in the source tree." },
+      { "r": "A", "t": "It is in src/util/retry.js, with its tests next to it." }
+    ] },
+    { "events": [
+      { "r": "U", "t": "Is the storage adapter interface documented anywhere?" },
+      { "r": "A", "t": "Only in a comment at the top of src/storage/adapter.js; I can turn that into a docs page if you like." }
+    ] },
+    { "events": [
+      { "r": "A", "t": "Cleaned up the stale lint warnings." }
+    ] },
+    { "events": [
+      { "r": "U", "t": "Do we need a timeout on the update check request?" },
+      { "r": "A", "t": "A 3 second timeout on the update check is already in place; it fails silently when offline." }
+    ] }
+  ]
+}

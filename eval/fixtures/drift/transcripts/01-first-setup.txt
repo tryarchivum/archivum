@@ -1,0 +1,31 @@
+TRANSCRIPT trn_evaldrift0000000000001 source=claude-code events=7
+
+SYSTEM:
+Session date: 2026-01-12. Project: pelletd, a small metrics relay daemon. Version 1.0.0.
+
+USER:
+Set up pelletd on the staging box so the dashboard can scrape it. Tell me where the config lives and how clients authenticate.
+
+ASSISTANT:
+I will install the package and read the default config.
+
+TOOL bash:
+$ pelletd --version
+pelletd 1.0.0
+$ ls /etc/pelletd/
+pelletd.conf
+$ grep -E "^(listen|auth)" /etc/pelletd/pelletd.conf
+listen = 0.0.0.0:9100
+auth = static-key
+
+ASSISTANT:
+The config is /etc/pelletd/pelletd.conf, the daemon listens on port 9100 and clients authenticate with a shared static key sent in the X-Pellet-Key header. Let me check that the dashboard can reach it.
+
+TOOL bash:
+$ curl -s -H "X-Pellet-Key: dev" localhost:9100/healthz
+ok
+$ curl -s -o /dev/null -w "%{http_code}\n" localhost:9100/healthz
+401
+
+ASSISTANT:
+Confirmed on 1.0.0: with the X-Pellet-Key header the health check returns ok, without it the daemon answers 401. Config /etc/pelletd/pelletd.conf, port 9100, static key auth.

@@ -1,0 +1,14 @@
+{
+  "name": "archivum-monorepo",
+  "version": "0.2.8",
+  "private": true,
+  "type": "module",
+  "description": "Archivum: long-term memory for AI agents. Core library, CLI and MCP server.",
+  "homepage": "https://tryarchivum.com",
+  "license": "MIT",
+  "engines": { "node": ">=22" },
+  "workspaces": ["packages/*"],
+  "scripts": {
+    "test": "node --test \"packages/*/test/*.test.js\" \"eval/test/*.test.js\""
+  }
+}

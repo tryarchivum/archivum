@@ -1,0 +1,182 @@
+{
+  "version": 1,
+  "instructions": "This memory is for operating pelletd, a small metrics relay daemon that a dashboard scrapes. Future sessions need the current config location, port and authentication method, exact commands and flags, and they must be able to tell which older values are no longer valid.",
+  "description": "Drift scenario: config location, port and auth method each change twice across eight sessions (2026-01-12 to 2026-04-20). Only the latest value is true; every superseded value that is still mentioned must carry a date or a superseded/no longer marker. Patterns are JavaScript regexes tested per document, case-insensitive.",
+  "checks": [
+    {
+      "id": "config-current",
+      "group": "latest-value",
+      "description": "The current config file /opt/pelletd/conf.d/relay.toml is documented",
+      "type": "present",
+      "pattern": "/opt/pelletd/conf\\.d/relay\\.toml"
+    },
+    {
+      "id": "port-current",
+      "group": "latest-value",
+      "description": "The current port 9443 is documented as the listen port",
+      "type": "present",
+      "pattern": "(port|listen)[^\\n]{0,80}\\b9443\\b|\\b9443\\b[^\\n]{0,80}(port|listen|tls)"
+    },
+    {
+      "id": "auth-current-bearer",
+      "group": "latest-value",
+      "description": "The current auth method (bearer tokens) is documented",
+      "type": "present",
+      "pattern": "bearer"
+    },
+    {
+      "id": "auth-token-command",
+      "group": "latest-value",
+      "description": "The command that issues tokens, `pelletd token issue`, is recorded",
+      "type": "present",
+      "pattern": "pelletd token issue"
+    },
+    {
+      "id": "config-old-etc-marked",
+      "group": "superseded-marked",
+      "description": "/etc/pelletd/pelletd.conf (config location until 1.2.0) appears only with a date or superseded/no longer marker",
+      "type": "absent_unless_marked",
+      "pattern": "/etc/pelletd/pelletd\\.conf",
+      "marker": "supersed|no longer|formerly|previously|used to|replaced|obsolete|stale|deprecated|removed|dropped|until|before|historical|CONFLICT|moved|ignored|rejected|\\b20\\d\\d-\\d\\d-\\d\\d\\b"
+    },
+    {
+      "id": "config-old-yaml-marked",
+      "group": "superseded-marked",
+      "description": "~/.config/pelletd/config.yaml (config location 1.2.0 to 1.4.x) appears only with a date or superseded/no longer marker",
+      "type": "absent_unless_marked",
+      "pattern": "~/\\.config/pelletd|config\\.yaml",
+      "marker": "supersed|no longer|formerly|previously|used to|replaced|obsolete|stale|deprecated|removed|dropped|until|before|historical|CONFLICT|moved|ignored|rejected|\\b20\\d\\d-\\d\\d-\\d\\d\\b"
+    },
+    {
+      "id": "port-old-9100-marked",
+      "group": "superseded-marked",
+      "description": "Port 9100 (until 2026-02-23) appears only with a date or superseded/no longer marker",
+      "type": "absent_unless_marked",
+      "pattern": "\\b9100\\b",
+      "marker": "supersed|no longer|formerly|previously|used to|replaced|obsolete|stale|deprecated|removed|dropped|until|before|historical|CONFLICT|moved|ignored|rejected|\\b20\\d\\d-\\d\\d-\\d\\d\\b"
+    },
+    {
+      "id": "port-old-9115-marked",
+      "group": "superseded-marked",
+      "description": "Port 9115 (2026-02-23 to 2026-04-05) appears only with a date or superseded/no longer marker",
+      "type": "absent_unless_marked",
+      "pattern": "\\b9115\\b",
+      "marker": "supersed|no longer|formerly|previously|used to|replaced|obsolete|stale|deprecated|removed|dropped|until|before|historical|CONFLICT|moved|ignored|rejected|\\b20\\d\\d-\\d\\d-\\d\\d\\b"
+    },
+    {
+      "id": "auth-old-key-marked",
+      "group": "superseded-marked",
+      "description": "The static key (X-Pellet-Key) appears only with a date or superseded/no longer marker",
+      "type": "absent_unless_marked",
+      "pattern": "X-Pellet-Key|static[- ]key",
+      "marker": "supersed|no longer|formerly|previously|used to|replaced|obsolete|stale|deprecated|removed|dropped|until|before|historical|CONFLICT|moved|ignored|rejected|\\b20\\d\\d-\\d\\d-\\d\\d\\b"
+    },
+    {
+      "id": "auth-old-basic-marked",
+      "group": "superseded-marked",
+      "description": "Basic auth (users.htpasswd, 2026-03-09 to 2.1.0) appears only with a date or superseded/no longer marker",
+      "type": "absent_unless_marked",
+      "pattern": "--auth basic|users\\.htpasswd|basic auth",
+      "marker": "supersed|no longer|formerly|previously|used to|replaced|obsolete|stale|deprecated|removed|dropped|until|before|historical|CONFLICT|moved|ignored|rejected|\\b20\\d\\d-\\d\\d-\\d\\d\\b"
+    },
+    {
+      "id": "latest-version",
+      "group": "latest-value",
+      "description": "The latest version 2.2.0 is recorded",
+      "type": "present",
+      "pattern": "2\\.2\\.0"
+    },
+    {
+      "id": "latest-change-dated",
+      "group": "latest-value",
+      "description": "The date of the latest change (2026-04-20 or the release date 2026-04-19) is recorded",
+      "type": "present",
+      "pattern": "2026-04-(19|20)"
+    },
+    {
+      "id": "flag-buffer",
+      "group": "buried-detail",
+      "description": "Exact flag `--buffer 4096` (found in a dry run) is recorded",
+      "type": "present",
+      "pattern": "--buffer[ =]4096"
+    },
+    {
+      "id": "flag-retain",
+      "group": "buried-detail",
+      "description": "Exact flag `--retain 14d` is recorded",
+      "type": "present",
+      "pattern": "--retain[ =]14d"
+    },
+    {
+      "id": "cmd-validate",
+      "group": "buried-detail",
+      "description": "The pre-restart command `pelletd validate` is recorded",
+      "type": "present",
+      "pattern": "pelletd validate"
+    },
+    {
+      "id": "index-complete",
+      "group": "structure",
+      "description": "/_index.md exists and links every non-stub document",
+      "type": "index_complete",
+      "index": "/_index.md",
+      "minBodyChars": 40
+    },
+    {
+      "id": "no-dangling-links",
+      "group": "structure",
+      "description": "Every [[link]] resolves to an existing document",
+      "type": "no_dangling_links"
+    },
+    {
+      "id": "doc-size-limit",
+      "group": "structure",
+      "description": "No document is over 100,000 bytes",
+      "type": "max_doc_bytes",
+      "max": 100000
+    },
+    {
+      "id": "doc-count-sane",
+      "group": "structure",
+      "description": "Between 2 and 20 documents in total",
+      "type": "doc_count",
+      "min": 2,
+      "max": 20
+    }
+  ],
+  "questions": [
+    {
+      "id": "q-config",
+      "question": "In the latest pelletd release, which file does the daemon read its configuration from? Reply with only the current path.",
+      "answer": "/opt/pelletd/conf\\.d/relay\\.toml",
+      "reject": "/etc/pelletd|config\\.yaml|~/\\.config"
+    },
+    {
+      "id": "q-port",
+      "question": "Which TCP port does pelletd listen on now? Reply with only the port number.",
+      "answer": "\\b9443\\b",
+      "reject": "\\b9100\\b|\\b9115\\b"
+    },
+    {
+      "id": "q-auth",
+      "question": "How do clients authenticate to pelletd in the latest release? Reply in one short sentence with the current method only.",
+      "answer": "bearer",
+      "reject": "X-Pellet-Key|basic|htpasswd|static"
+    },
+    {
+      "id": "q-token-command",
+      "question": "Which command issues a credential for a client, and with which flag is the lifetime set?",
+      "answer": "pelletd token issue[\\s\\S]*--ttl|--ttl[\\s\\S]*pelletd token issue"
+    },
+    {
+      "id": "q-buffer",
+      "question": "Which flag sets the ring buffer size of the relay, and which value fixed the dropped samples?",
+      "answer": "--buffer[\\s\\S]*4096|4096[\\s\\S]*--buffer"
+    },
+    {
+      "id": "q-version",
+      "question": "What is the latest pelletd version recorded in the notes? Reply with only the version.",
+      "answer": "2\\.2\\.0"
+    }
+  ]
+}

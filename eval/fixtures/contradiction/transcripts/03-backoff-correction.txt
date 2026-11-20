@@ -1,0 +1,20 @@
+TRANSCRIPT trn_evalcontra000000000003 source=claude-code events=5
+
+SYSTEM:
+Session date: 2026-03-02. Project: fennelq, version 0.8.6.
+
+USER:
+Correction to what you noted on February 2: the retry backoff starts at 500 ms, not 2 seconds. The README is out of date. I just checked src/backoff.rs.
+
+ASSISTANT:
+Let me confirm in the source before I change anything.
+
+TOOL bash:
+$ grep -n "DELAY" src/backoff.rs
+12:const BASE_DELAY_MS: u64 = 500;
+13:const MAX_DELAY_MS: u64 = 60_000;
+$ git log -1 --format=%cs -- src/backoff.rs
+2026-01-19
+
+ASSISTANT:
+Confirmed: BASE_DELAY_MS is 500, doubling up to a 60 second cap. The 2 seconds in the README (and in my note of February 2) was wrong; the code changed on 2026-01-19 and the README was never updated. The initial retry backoff is 500 ms.
